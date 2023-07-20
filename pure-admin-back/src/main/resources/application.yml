@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/pure_admin
+    username: root
+#    password: 123456
+    password: passwd
+  web:
+    resources:
+      static-locations: [ classpath:/static/ ]
+  devtools:
+    restart:
+      enabled: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#    开启mybatis的驼峰命名自动映射开关 a_column ------> aCloumn
+    map-underscore-to-camel-case: true
+    variables:
+      baseUrl: ${API_URL}
+server:
+  port: 8080
+file:
+  uploadImgFolder: /home/pi/ACS_pi/data/img/
+  uploadVideoFolder: /home/pi/ACS_pi/data/video/
+#  uploadFolder: D:\project\ideaprj\pure-admin-back\img\
+#  uploadImgFolder: E:\Microstar\python\ACS\data\img\
+#  uploadVideoFolder: E:\Microstar\python\ACS\data\video\
+getImgUrl: http://127.0.0.1:8080/api/image

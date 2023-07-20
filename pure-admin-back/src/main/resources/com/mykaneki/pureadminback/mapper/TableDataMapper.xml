@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mykaneki.pureadminback.mapper.TableDataMapper">
+
+    <select id="list" resultType="com.mykaneki.pureadminback.pojo.TableData">
+
+        SELECT
+        users_basic_info.id AS `id`,
+        users_basic_info.`name` AS `name`,
+        (CASE
+        WHEN users_basic_info.gender = 1 THEN '男'
+        WHEN users_basic_info.gender = 0 THEN '女'
+        ELSE '未知'
+        END) AS `gender`,
+        users_basic_info.age AS `age`,
+        users_basic_info.id_card AS `idCard`,
+        CONCAT('${baseUrl}', users_img_info.image) AS `image`,
+        CONCAT('${baseUrl}', users_img_info.video) AS `video`
+
+        FROM
+        users_basic_info,
+        users_img_info
+        WHERE
+        users_basic_info.id = users_img_info.id
+        <if test="name != null">
+            AND users_basic_info.`name` = #{name}
+        </if>
+        <if test="id != null">
+            AND users_basic_info.id = #{id}
+        </if>
+        <if test="gender != null">
+            AND users_basic_info.gender = #{gender}
+        </if>
+        <if test="age != null">
+            AND users_basic_info.age = #{age}
+        </if>
+        <if test="idNumber != null">
+            AND users_basic_info.id_card = #{idCard}
+        </if>
+
+    </select>
+    <update id="editRow">
+        UPDATE users_basic_info
+        JOIN users_img_info
+        ON users_basic_info.id = users_img_info.id
+        <set>
+            <if test="name != null">
+                users_basic_info.`name` = #{name},
+            </if>
+            <if test="id != null">
+                users_basic_info.id = #{id},
+            </if>
+            <if test="gender != null">
+                users_basic_info.gender = #{gender},
+            </if>
+            <if test="age != null">
+                users_basic_info.age = #{age},
+            </if>
+            <if test="idCard != null">
+                users_basic_info.id_card = #{idCard},
+            </if>
+            <if test="image != null">
+                users_img_info.image = #{image},
+            </if>
+            <if test="video != null">
+                users_img_info.video = #{video}
+            </if>
+        </set>
+        WHERE users_basic_info.id = #{id}
+    </update>
+
+    <delete id="deleteRowFromBasicInfo">
+        DELETE FROM users_basic_info
+        WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteRowFromImgInfo">
+        DELETE FROM users_img_info
+        WHERE id = #{id}
+    </delete>
+
+    <insert id="insertIntoBasicInfo" parameterType="com.mykaneki.pureadminback.pojo.TableData">
+        INSERT INTO users_basic_info (name, gender, age, id_card)
+        VALUES (#{name}, #{gender}, #{age}, #{idCard});
+    </insert>
+
+    <insert id="insertIntoImgInfo" parameterType="com.mykaneki.pureadminback.pojo.TableData">
+        INSERT INTO users_img_info (id, image, video)
+        VALUES (#{id}, #{image}, #{video});
+    </insert>
+
+    <update id="updateImageAndVideo">
+        UPDATE users_img_info
+        SET image = CONCAT(id, '.', SUBSTRING_INDEX(image, '.', -1)),
+            video = CONCAT(id, '.', SUBSTRING_INDEX(video, '.', -1))
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectMaxId" resultType="int">
+        SELECT MAX(id) FROM users_basic_info;
+    </select>
+</mapper>
